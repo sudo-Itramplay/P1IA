@@ -540,15 +540,20 @@ class Aichess():
 
         # Llista llocs on hem passat
         # Cost / cami o node
-        evaluated = {}
+        evaluated = []
 
 
         #### Comença algoritme
-        Reconstructpath
 
         while frontera:
 
-            current = frontera.pop()
+            current = frontera.pop() # Hem d'agafar el de valor mínim
+            if current == objectiu:
+                return self.reconstructPath()
+            
+            evaluated.append(current)
+            
+            #Processar veins
 
 
 
