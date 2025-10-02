@@ -12,7 +12,7 @@ import chess
 import board
 import numpy as np
 import sys
-import queue
+import queue as q
 from typing import List
 
 RawStateType = List[List[List[int]]]
@@ -474,7 +474,7 @@ class Aichess():
         """
         Checkmate from currentStateW
         """
-        BFSQueue = queue.Queue()
+        BFSQueue = q.Queue()
         # The root node has no parent, thus we add None, and -1 as the parent's depth
         self.dictPath[str(currentState)] = (None, -1)
         depthCurrentState = 0
@@ -508,13 +508,15 @@ class Aichess():
 
      # TODO
         #g(n)
+
+    # TODO
         #h(n)
 
 
      # TODO
+     # A*
      # 
-     # Creem llista tancada - Llista amb els nodes pels que ja hem decidit expandir
-     # Creeem llista oberta - Tots els nodes, per ara, disponibles  
+     #
      #        
 
 
@@ -528,32 +530,57 @@ class Aichess():
 
     #RECORDA
         STATE = x , y , peça
+
+
+        Donat que evaluated ha de donarnos l'element amb 
+        més prioitat, importarem priority queue
     '''
+
+
 
     def AStarSearch(self, currentState):
         
         #### INICIALITZEM
 
+        #objectiu, B-rey
+        objectiu=[0,5]
+
         # Llista per on podem passar 
-        frontera = []
-        frontera.append((self.h(currentState),currentState))
+        # es a dir, llista oberta
+        frontera = q.PriorityQueue()
+        frontera.put((self.h(currentState),currentState))
 
         # Llista llocs on hem passat
         # Cost / cami o node
         evaluated = []
-
-
         #### Comença algoritme
 
-        while frontera:
+        while frontera.not_empty:
 
-            current = frontera.pop() # Hem d'agafar el de valor mínim
-            if current == objectiu:
-                return self.reconstructPath()
+            current = frontera.get() # Hem d'agafar el de valor mínim
+            if self.isCheckMate(current):
+                return self.reconstructPath(currentState, current)
             
             evaluated.append(current)
             
-            #Processar veins
+            #Processar veins\
+            for move in self.getListNextStatesW(current[1]) :
+                if move in evaluated:
+                    pass
+
+                evaluated.append(move)
+                frontera.put(('inf',move))
+
+                #g_provisional = g_cost[node_actual] + Coste_entre(node_actual, veí)
+                f= evaluated[0][0]+ self.h(move)
+
+
+                if f < current[0]:
+                    frontera.put((f, move))
+
+        return
+
+
 
 
 
@@ -590,6 +617,7 @@ if __name__ == "__main__":
     print("Current State:", currentState, "\n")
 
     # Run A* search
+    #aichess.BreadthFirstSearch(currentState, depth=7)
     aichess.AStarSearch(currentState)
     print("#A* move sequence:", aichess.pathToTarget)
     print("A* End\n")
