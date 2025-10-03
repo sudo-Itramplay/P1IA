@@ -553,17 +553,22 @@ class Aichess():
             while not frontera.empty():
                 # agafem el node amb menor f(n)
                 f_current, g_current, current = frontera.get()
-                print(f"Expanding node: {current}, f={f_current}, g={g_current}")
-                print("Situacio actual")
-                aichess.chess.boardSim.print_board()
 
                 # movem les peces per actualitzar l'estat del tauler
                 #No entra aquí llavors?
                 depthNode = self.dictPath[str(current)][1]
                 if depthNode > 0:
                     print("a")
+                    fullState = aichess.chess.board.currentStateW + aichess.chess.board.currentStateB
+
+                    self.newBoardSim(fullState)
+
                     self.movePieces(currentState, 0, current, depthNode)
 
+                print(f"Expanding node: {current}, f={f_current}, g={g_current}")
+                print("Situacio actual")
+                aichess.chess.boardSim.print_board()
+                
                 if self.isCheckMate(current):
                     #El g current al final sera la depth
                     #depthNode = self.dictPath[str(node)][1]
