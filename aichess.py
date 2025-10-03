@@ -12,7 +12,7 @@ import chess
 import board
 import numpy as np
 import sys
-import queue
+import queue as q
 from typing import List
 
 RawStateType = List[List[List[int]]]
@@ -474,7 +474,7 @@ class Aichess():
         """
         Checkmate from currentStateW
         """
-        BFSQueue = queue.Queue()
+        BFSQueue = q.Queue()
         # The root node has no parent, thus we add None, and -1 as the parent's depth
         self.dictPath[str(currentState)] = (None, -1)
         depthCurrentState = 0
@@ -508,13 +508,15 @@ class Aichess():
 
      # TODO
         #g(n)
+
+    # TODO
         #h(n)
 
 
      # TODO
+     # A*
      # 
-     # Creem llista tancada - Llista amb els nodes pels que ja hem decidit expandir
-     # Creeem llista oberta - Tots els nodes, per ara, disponibles  
+     #
      #        
 
 
@@ -528,6 +530,10 @@ class Aichess():
 
     #RECORDA
         STATE = x , y , peça
+
+
+        Donat que evaluated ha de donarnos l'element amb 
+        més prioitat, importarem priority queue
     '''
     def AStarSearch(self, currentState):
         # objectiu, B-rey
@@ -598,6 +604,7 @@ if __name__ == "__main__":
     print("Current State:", currentState, "\n")
 
     # Run A* search
+    #aichess.BreadthFirstSearch(currentState, depth=7)
     aichess.AStarSearch(currentState)
     print("#A* move sequence:", aichess.pathToTarget)
     print("A* End\n")
