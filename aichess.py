@@ -536,46 +536,67 @@ class Aichess():
         més prioitat, importarem priority queue
     '''
     def AStarSearch(self, currentState):
-        # objectiu, B-rey
-        objectiu = [0, 5, 6]
+            # objectiu, B-rey
+            objectiu = [0, 5, 6]
 
-        # frontera: PriorityQueue amb (f, g, estat)
-        frontera = queue.PriorityQueue()
-        frontera.put((self.h(currentState), 0, currentState))
+            # frontera: PriorityQueue amb (f, g, estat)
+            frontera = q.PriorityQueue()
+            frontera.put((self.h(currentState), 0, currentState))
 
-        # millor cost trobat per cada node
-        evaluated = {str(currentState): 0}
+            # millor cost trobat per cada node
+            evaluated = {str(currentState): 0}
 
-        # per reconstruir el camí
-        
-        self.dictPath = {str(currentState): (None, 0)}
+            # per reconstruir el camí
+            
+            self.dictPath = {str(currentState): (None, 0)}
 
-        while not frontera.empty():
-            f_current, g_current, current = frontera.get()
-            print(f"Expanding node: {current}, f={f_current}, g={g_current}")
+            while not frontera.empty():
+                # agafem el node amb menor f(n)
+                f_current, g_current, current = frontera.get()
+                print(f"Expanding node: {current}, f={f_current}, g={g_current}")
+                print("Situacio actual")
+                aichess.chess.boardSim.print_board()
 
-            if self.isCheckMate(current):
-                #El g current al final sera la depth
-                print("Goal found!")
-                return self.reconstructPath(current, g_current)
+                # movem les peces per actualitzar l'estat del tauler
+                #No entra aquí llavors?
+                depthNode = self.dictPath[str(current)][1]
+                if depthNode > 0:
+                    print("a")
+                    self.movePieces(currentState, 0, current, depthNode)
 
-            # Processar veïns
-            for move in self.getListNextStatesW(current):
-                new_g = g_current + 1
-                old_g = evaluated.get(str(move), float("inf"))
+                if self.isCheckMate(current):
+                    #El g current al final sera la depth
+                    #depthNode = self.dictPath[str(node)][1]
+                    print("Goal found!")
+                    return self.reconstructPath(current, g_current)
 
-                if new_g < old_g:
-                    print(f"  Adding move: {move}, g={new_g}")
-                    evaluated[str(move)] = new_g
-                    self.dictPath[str(move)] = (current, new_g)  # guardem el pare
 
-                    new_h = self.h(move)
-                    new_f = new_g + new_h
+                # Processar veïns
+                for move in self.getListNextStatesW(current):
 
-                    frontera.put((new_f, new_g, move))
+                    #g_current no es el old_g?
+                    new_g = g_current + 1
+                    old_g = evaluated.get(str(move), float("inf"))
 
-        # Si no hi ha solució
-        return None
+                    # Com que comencem tots els move des de la mateixa posició
+                    # h(n) serà el mateix per a tots els nodes
+                    # Per això només cal comparar g(n)
+                    if new_g < old_g:
+
+                        print(f"  Adding move: {move}, g={new_g}")
+                        evaluated[str(move)] = new_g
+                        #frontera.put((f_son, g_son, son))
+                        self.dictPath[str(move)] = (current, new_g)  # guardem el pare
+
+                        new_h = self.h(move)
+                        new_f = new_g + new_h
+
+                        # Afegim el node per si despres
+                        # Volem tornar-hi
+                        frontera.put((new_f, new_g, move))           
+                
+            # Si no hi ha solució
+            return None
 
 
 if __name__ == "__main__":
