@@ -546,6 +546,9 @@ class Aichess():
             # millor cost trobat per cada node
             evaluated = {str(currentState): 0}
 
+            #Evitem revisitar nodes
+            visited = set()
+
             # per reconstruir el camí
             
             self.dictPath = {str(currentState): (None, 0)}
@@ -554,6 +557,10 @@ class Aichess():
                 # agafem el node amb menor f(n)
                 f_current, g_current, current = frontera.get()
 
+                state_str = str(current)
+                if state_str in visited:
+                    continue
+                visited.add(state_str)
                 # movem les peces per actualitzar l'estat del tauler
                 #No entra aquí llavors?
                 depthNode = self.dictPath[str(current)][1]
