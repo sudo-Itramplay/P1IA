@@ -184,7 +184,7 @@ class Board():
             listOtherPieces.remove(mypiece)
 
             listPotentialNextStates = []
-
+            #Vale he fet una modificacio aqui afgeitn que nomes miri les coordenades
             if (str(self.board[mypiece[0]][mypiece[1]]) == 'K'):
 
                 #      print(" mypiece at  ",mypiece[0],mypiece[1])

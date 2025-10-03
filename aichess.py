@@ -529,39 +529,47 @@ class Aichess():
     #RECORDA
         STATE = x , y , peça
     '''
-
     def AStarSearch(self, currentState):
+        # objectiu, B-rey
+        objectiu = [0, 5, 6]
+
+        # frontera: PriorityQueue amb (f, g, estat)
+        frontera = queue.PriorityQueue()
+        frontera.put((self.h(currentState), 0, currentState))
+
+        # millor cost trobat per cada node
+        evaluated = {str(currentState): 0}
+
+        # per reconstruir el camí
         
-        #### INICIALITZEM
+        self.dictPath = {str(currentState): (None, 0)}
 
-        # Llista per on podem passar 
-        frontera = []
-        frontera.append((self.h(currentState),currentState))
+        while not frontera.empty():
+            f_current, g_current, current = frontera.get()
+            print(f"Expanding node: {current}, f={f_current}, g={g_current}")
 
-        # Llista llocs on hem passat
-        # Cost / cami o node
-        evaluated = []
+            if self.isCheckMate(current):
+                #El g current al final sera la depth
+                print("Goal found!")
+                return self.reconstructPath(current, g_current)
 
+            # Processar veïns
+            for move in self.getListNextStatesW(current):
+                new_g = g_current + 1
+                old_g = evaluated.get(str(move), float("inf"))
 
-        #### Comença algoritme
+                if new_g < old_g:
+                    print(f"  Adding move: {move}, g={new_g}")
+                    evaluated[str(move)] = new_g
+                    self.dictPath[str(move)] = (current, new_g)  # guardem el pare
 
-        while frontera:
+                    new_h = self.h(move)
+                    new_f = new_g + new_h
 
-            current = frontera.pop() # Hem d'agafar el de valor mínim
-            if current == objectiu:
-                return self.reconstructPath()
-            
-            evaluated.append(current)
-            
-            #Processar veins
+                    frontera.put((new_f, new_g, move))
 
-
-
-
-        
-        
-
-	# your code here...
+        # Si no hi ha solució
+        return None
 
 
 if __name__ == "__main__":
@@ -575,7 +583,7 @@ if __name__ == "__main__":
     # White pieces
     TA[7][0] = 2  
     TA[7][5] = 6   
-    TA[0][5] = 12  
+    TA[0][4] = 12  
 
     # Initialize AI chess with the board
     print("Starting AI chess...")
