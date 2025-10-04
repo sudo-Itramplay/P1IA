@@ -360,8 +360,6 @@ def getListNextStatesW(self):
         Gets the list of next possible states given the currentStateW
         
         """
-        #pieces = self.getWhiteState(self, currentState)
-        #board.getListNextStatesW(self, )
        
                 
 

@@ -565,11 +565,12 @@ class Aichess():
                 #No entra aquí llavors?
                 depthNode = self.dictPath[str(current)][1]
                 if depthNode > 0:
-                    print("a")
-                    fullState = aichess.chess.board.currentStateW + aichess.chess.board.currentStateB
+                    current_tuple = tuple(map(tuple, current))
+                    if current_tuple in visited:
+                        continue
+                    visited.add(current_tuple)
 
-                    self.newBoardSim(fullState)
-
+                    #CANVIAR
                     self.movePieces(currentState, 0, current, depthNode)
 
                 print(f"Expanding node: {current}, f={f_current}, g={g_current}")
