@@ -546,67 +546,58 @@ class Aichess():
             # millor cost trobat per cada node
             evaluated = {str(currentState): 0}
 
-            #Evitem revisitar nodes
-            visited = set()
-
-            # per reconstruir el camí
-            
-            self.dictPath = {str(currentState): (None, 0)}
+            # Donem valor inicial a dictpath
+            # Per poder després reconsturir el camí
+            # None és el node arre, -1 és la profunditat del pare
+            self.dictPath[str(currentState)] = (None, -1)
+            depthCurrentState = 0
+            self.listVisitedStates.append(currentState)
 
             while not frontera.empty():
                 # agafem el node amb menor f(n)
-                f_current, g_current, current = frontera.get()
+                f, g, node = frontera.get()
+                #Agafem el num de moviment, per calculs
+                depthNode = self.dictPath[str(node)][1]+1
 
-                state_str = str(current)
-                if state_str in visited:
-                    continue
-                visited.add(state_str)
-                # movem les peces per actualitzar l'estat del tauler
-                #No entra aquí llavors?
-                depthNode = self.dictPath[str(current)][1]
                 if depthNode > 0:
-                    current_tuple = tuple(map(tuple, current))
-                    if current_tuple in visited:
-                        continue
-                    visited.add(current_tuple)
+                    self.movePieces(currentState, depthCurrentState, node, depthNode)
 
-                    #CANVIAR
-                    self.movePieces(currentState, 0, current, depthNode)
-
-                print(f"Expanding node: {current}, f={f_current}, g={g_current}")
+                print(f"Expanding node: {node}, f={f}, g={g}")
                 print("Situacio actual")
                 aichess.chess.boardSim.print_board()
                 
-                if self.isCheckMate(current):
+                if self.isCheckMate(node):
                     #El g current al final sera la depth
                     #depthNode = self.dictPath[str(node)][1]
                     print("Goal found!")
-                    return self.reconstructPath(current, g_current)
-
+                    #Emplenem path to target i retonrem
+                    self.reconstructPath(node, g)
+                    return self.pathToTarget
 
                 # Processar veïns
-                for move in self.getListNextStatesW(current):
+                for move in self.getListNextStatesW(node):
 
                     #g_current no es el old_g?
-                    new_g = g_current + 1
-                    old_g = evaluated.get(str(move), float("inf"))
+                    new_g = g + 1
 
                     # Com que comencem tots els move des de la mateixa posició
                     # h(n) serà el mateix per a tots els nodes
                     # Per això només cal comparar g(n)
-                    if new_g < old_g:
+                    if str(move) not in evaluated or new_g < evaluated[str(move)]:
+
+                        #Un cop comprovat que no l'hem visitat, calculem f
+                        new_f = new_g + self.h(move)
 
                         print(f"  Adding move: {move}, g={new_g}")
                         evaluated[str(move)] = new_g
-                        #frontera.put((f_son, g_son, son))
-                        self.dictPath[str(move)] = (current, new_g)  # guardem el pare
+                        frontera.put((new_f, new_g, move))
+                        self.dictPath[str(move)] = (node, depthNode)  # guardem el pare
 
-                        new_h = self.h(move)
-                        new_f = new_g + new_h
-
-                        # Afegim el node per si despres
-                        # Volem tornar-hi
-                        frontera.put((new_f, new_g, move))           
+                        #Afegim a visitats
+                        self.listVisitedStates.append(move)
+                currentState = node
+                depthCurrentState = depthNode
+         
                 
             # Si no hi ha solució
             return None
