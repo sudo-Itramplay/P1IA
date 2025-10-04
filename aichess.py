@@ -536,7 +536,7 @@ class Aichess():
         més prioitat, importarem priority queue
     '''
     def AStarSearch(self, currentState):
-            # objectiu, B-rey
+            # objectiu = rei Negre
             objectiu = [0, 5, 6]
 
             # frontera: PriorityQueue amb (f, g, estat)
@@ -556,20 +556,15 @@ class Aichess():
             while not frontera.empty():
                 # agafem el node amb menor f(n)
                 f, g, node = frontera.get()
-                #Agafem el num de moviment, per calculs
+                # Agafem el num de moviment, per calculs
                 depthNode = self.dictPath[str(node)][1]+1
 
                 if depthNode > 0:
                     self.movePieces(currentState, depthCurrentState, node, depthNode)
-
-                print(f"Expanding node: {node}, f={f}, g={g}")
-                print("Situacio actual")
-                aichess.chess.boardSim.print_board()
-                
+                    # Comprovem si hem arribat a l'objectiu                        
                 if self.isCheckMate(node):
                     #El g current al final sera la depth
-                    #depthNode = self.dictPath[str(node)][1]
-                    print("Goal found!")
+                    print("Solució trobada")
                     #Emplenem path to target i retonrem
                     self.reconstructPath(node, g)
                     return self.pathToTarget
@@ -577,7 +572,7 @@ class Aichess():
                 # Processar veïns
                 for move in self.getListNextStatesW(node):
 
-                    #g_current no es el old_g?
+                    #càlcul del nou cost g
                     new_g = g + 1
 
                     # Com que comencem tots els move des de la mateixa posició
@@ -587,18 +582,16 @@ class Aichess():
 
                         #Un cop comprovat que no l'hem visitat, calculem f
                         new_f = new_g + self.h(move)
-
-                        print(f"  Adding move: {move}, g={new_g}")
                         evaluated[str(move)] = new_g
                         frontera.put((new_f, new_g, move))
                         self.dictPath[str(move)] = (node, depthNode)  # guardem el pare
 
                         #Afegim a visitats
                         self.listVisitedStates.append(move)
+                # Actualitzem currentState i depthCurrentState        
                 currentState = node
                 depthCurrentState = depthNode
          
-                
             # Si no hi ha solució
             return None
 
