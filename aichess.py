@@ -505,94 +505,63 @@ class Aichess():
             depthCurrentState = depthNode
 
 
-
-     # TODO
-        #g(n)
-
-    # TODO
-        #h(n)
-
-
-     # TODO
-     # A*
-     # 
-     #
-     #        
-
-
-    '''
-    # frontera
-    # (Valor Heuristica, Posició W) #h(), current state
-    # h(n) aqui fa current stATE
-        # 
-
-        
-
-    #RECORDA
-        STATE = x , y , peça
-
-
-        Donat que evaluated ha de donarnos l'element amb 
-        més prioitat, importarem priority queue
-    '''
     def AStarSearch(self, currentState):
-            # objectiu = rei Negre
-            objectiu = [0, 5, 6]
+            objectiu = [0, 5, 6] #black king position
 
-            # frontera: PriorityQueue amb (f, g, estat)
+            # frontera: PriorityQueue filled with (f, g, estat)
             frontera = q.PriorityQueue()
             frontera.put((self.h(currentState), 0, currentState))
 
-            # millor cost trobat per cada node
+            # best cost for each node
             evaluated = {str(currentState): 0}
 
-            # Donem valor inicial a dictpath
-            # Per poder després reconsturir el camí
-            # None és el node arre, -1 és la profunditat del pare
+            # Inital value for dictPath
+            # DictPath to reconstruct the path
+            # father depth is -1
             self.dictPath[str(currentState)] = (None, -1)
             depthCurrentState = 0
             self.listVisitedStates.append(currentState)
 
             while not frontera.empty():
-                # agafem el node amb menor f(n)
+                # take the node with the lowest f value
                 f, g, node = frontera.get()
-                # Agafem el num de moviment, per calculs
+                # Get the number of moves made, for calculations
                 depthNode = self.dictPath[str(node)][1]+1
 
                 if depthNode > 0:
                     self.movePieces(currentState, depthCurrentState, node, depthNode)
-                    # Comprovem si hem arribat a l'objectiu                        
+                    # Check if we have reached the goal
                 if self.isCheckMate(node):
-                    #El g current al final sera la depth
+                    #The current  g value will be the final depth 
                     print("Solució trobada")
-                    #Emplenem path to target i retonrem
+                    # Reconstruct the path from the initial state to the target
                     self.reconstructPath(node, g)
                     return self.pathToTarget
 
-                # Processar veïns
+                # Process all the neighbors
                 for move in self.getListNextStatesW(node):
 
-                    #càlcul del nou cost g
+                    #new g value
                     new_g = g + 1
 
-                    # Com que comencem tots els move des de la mateixa posició
-                    # h(n) serà el mateix per a tots els nodes
-                    # Per això només cal comparar g(n)
+                    # Since we start all moves from the same position
+                    # h(n) will be the same for all nodes
+                    # Therefore, we only need to compare g(n)
                     if str(move) not in evaluated or new_g < evaluated[str(move)]:
 
-                        #Un cop comprovat que no l'hem visitat, calculem f
+                        #Once we now the node hasn't been visited, we calculate f
                         new_f = new_g + self.h(move)
                         evaluated[str(move)] = new_g
                         frontera.put((new_f, new_g, move))
-                        self.dictPath[str(move)] = (node, depthNode)  # guardem el pare
+                        self.dictPath[str(move)] = (node, depthNode)  # save the father node and its depth
 
-                        #Afegim a visitats
+                        #Add to visited nodes
                         self.listVisitedStates.append(move)
-                # Actualitzem currentState i depthCurrentState        
+                # update currentState and depthCurrentState
                 currentState = node
                 depthCurrentState = depthNode
-         
-            # Si no hi ha solució
+
+            # If there is no solution
             return None
 
 
@@ -606,7 +575,7 @@ if __name__ == "__main__":
     # Load initial positions of the pieces
     # White pieces
     TA[7][0] = 2  
-    TA[7][5] = 6   
+    TA[7][7] = 6   
     TA[0][4] = 12  
 
     # Initialize AI chess with the board
