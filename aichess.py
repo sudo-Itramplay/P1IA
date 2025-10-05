@@ -506,7 +506,6 @@ class Aichess():
 
 
     def AStarSearch(self, currentState):
-            objectiu = [0, 5, 6] #black king position
 
             # frontera: PriorityQueue filled with (f, g, estat)
             frontera = q.PriorityQueue()
